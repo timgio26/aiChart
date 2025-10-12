@@ -1,13 +1,10 @@
-import ModelClient, {
-  isUnexpected
-} from "@azure-rest/ai-inference";
+import ModelClient, { isUnexpected } from "@azure-rest/ai-inference";
 import { AzureKeyCredential } from "@azure/core-auth";
 import { ArrayToString } from "./Tools";
 
 const client = ModelClient(
   "https://models.github.ai/inference",
-  new AzureKeyCredential(import.meta.env.VITE_AI_KEY
-  )
+  new AzureKeyCredential(import.meta.env.VITE_AI_KEY)
 );
 
 export async function getRespFromAi() {
@@ -35,22 +32,38 @@ export async function getRecipeFromAi(items: string[]) {
           content:
             "You are a helpful chef assistant that always responds in strict JSON format. Do not include any explanation or extra text.",
         },
-        { role: "user", content: `give me recipe using : ${myItemsString}, format your respond like this
+        {
+          role: "user",
+          content: `give me recipe using : ${myItemsString}, format your respond like this
         {
         "title": string,
         "difficulty": number,
         "instructions": string[]
         }
-        ` },
+        `,
+        },
       ],
       model: "openai/gpt-4.1-nano",
     },
   });
   if (isUnexpected(response)) {
-    throw new Error(response.body.error.message)
+    throw new Error(response.body.error.message);
   }
-  if(!response.body.choices[0].message.content){
-    throw new Error("ai content error")
+  if (!response.body.choices[0].message.content) {
+    throw new Error("ai content error");
   }
   return JSON.parse(response.body.choices[0].message.content);
+}
+
+export async function getChartDesc(image:string) {
+  const response = await client.path("/images/embeddings").post({
+    body:{
+      input:[{image}],model:"openai/gpt-4.1"
+    }
+  });
+  console.log(response)
+  if (isUnexpected(response)) {
+    throw new Error(response.body.error.message);
+  }
+  return response.body.data;
 }

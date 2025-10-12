@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { getRecipeFromAi } from "./Ai";
 
-export default function App() {
+export default function CookingAI() {
   const [list, setList] = useState<string[]>([]);
   const [ingredient, setIngredient] = useState<string>("");
   function addToList() {

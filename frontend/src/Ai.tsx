@@ -55,15 +55,47 @@ export async function getRecipeFromAi(items: string[]) {
   return JSON.parse(response.body.choices[0].message.content);
 }
 
-export async function getChartDesc(image:string) {
-  const response = await client.path("/images/embeddings").post({
-    body:{
-      input:[{image}],model:"openai/gpt-4.1"
-    }
+export async function getChartDesc(imageurl: string) {
+  const response = await client.path("/chat/completions").post({
+    body: {
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a helpful data analyst that always responds in strict JSON format. Do not include any explanation or extra text.",
+        },
+
+        {
+          role: "user",
+          content: [
+            { type: "image_url", image_url: { url: imageurl } },
+            {
+              type: "text",
+              text: `
+            give me explanation about this chart ${imageurl}, format your respond like this
+              {
+                chartType:string,
+                insight:string
+              }
+            `,
+            },
+          ],
+          //   content: `give me explanation about this chart ${imageurl}, format your respond like this
+          // {
+          //   chartType:string,
+          //   insight:string
+          // }
+          // `
+        },
+      ],
+      model: "openai/gpt-4.1-nano",
+    },
   });
-  console.log(response)
+  console.log(response);
   if (isUnexpected(response)) {
     throw new Error(response.body.error.message);
   }
-  return response.body.data;
+  return response.body.choices[0].message.content;
 }
+
+// "https://imgupload-urf0.onrender.com/uploads/3a1e670e90a04260832bfcb881fb65a1.png"

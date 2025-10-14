@@ -4,22 +4,16 @@ import { getChartDesc } from "./Ai";
 export function ChartAI() {
   const [preview, setPreview] = useState<string>();
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async(e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const file = e.target.files[0];
     if (file) {
       const objectUrl = URL.createObjectURL(file);
       setPreview(objectUrl);
     }
-    const reader = new FileReader();
-    reader.readAsDataURL(file)
-    reader.onloadend = async()=>{
-      const imgBase64 = reader.result as string
-      console.log(imgBase64)
-      const resp = await getChartDesc(imgBase64)
-      console.log(resp)
+    const resp = await getChartDesc("https://imgupload-urf0.onrender.com/uploads/3a1e670e90a04260832bfcb881fb65a1.png")
+    console.log(resp)
     }
-  };
 
   return (
     <div className="flex flex-col items-center gap-4 p-6 max-w-md mx-auto border rounded-lg shadow-sm bg-white">

@@ -1,19 +1,19 @@
-import { useState } from "react";
-import { getChartDesc } from "./Ai";
+// import { useState } from "react";
+// import { getChartDesc } from "./Ai";
+import { useUploadImage } from "./MyQuery";
+import { useEffect } from "react";
 
 export function ChartAI() {
-  const [preview, setPreview] = useState<string>();
+  // const [preview, setPreview] = useState<string>();
+  const {uploadImg,data,isPending} = useUploadImage()
 
   const handleImageChange = async(e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const file = e.target.files[0];
-    if (file) {
-      const objectUrl = URL.createObjectURL(file);
-      setPreview(objectUrl);
+    uploadImg(file)
     }
-    const resp = await getChartDesc("https://imgupload-urf0.onrender.com/uploads/3a1e670e90a04260832bfcb881fb65a1.png")
-    console.log(resp)
-    }
+
+  useEffect(()=>{console.log("img change")},[data])
 
   return (
     <div className="flex flex-col items-center gap-4 p-6 max-w-md mx-auto border rounded-lg shadow-sm bg-white">
@@ -32,13 +32,13 @@ export function ChartAI() {
           onChange={handleImageChange}
           hidden
         />
-        <span className="text-gray-600">Click or drag to upload</span>
+        <span className="text-gray-600">{!isPending?"Click to upload":"Loading..."}</span>
       </label>
 
-      {preview && (
+      {data && (
         <div className="w-full">
           <img
-            src={preview}
+            src={`http://localhost:5000/${data}`}
             alt="Preview"
             className="max-w-full rounded-md border border-gray-200 shadow-sm"
           />
@@ -46,6 +46,7 @@ export function ChartAI() {
       )}
 
       <div>
+        {/* <span>{data}</span> */}
         <span>ai generated content here</span>
       </div>
     </div>

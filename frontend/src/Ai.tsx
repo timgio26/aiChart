@@ -1,11 +1,17 @@
 import ModelClient, { isUnexpected } from "@azure-rest/ai-inference";
 import { AzureKeyCredential } from "@azure/core-auth";
 import { ArrayToString } from "./Tools";
+import z from "zod";
 
 const client = ModelClient(
   "https://models.github.ai/inference",
   new AzureKeyCredential(import.meta.env.VITE_AI_KEY)
 );
+
+const getChartDescRespSchema = z.object({
+  chartType: z.string(),
+  insight: z.string(),
+});
 
 export async function getRespFromAi() {
   const response = await client.path("/chat/completions").post({
@@ -80,22 +86,22 @@ export async function getChartDesc(imageurl: string) {
             `,
             },
           ],
-          //   content: `give me explanation about this chart ${imageurl}, format your respond like this
-          // {
-          //   chartType:string,
-          //   insight:string
-          // }
-          // `
         },
       ],
       model: "openai/gpt-4.1-nano",
     },
   });
-  console.log(response);
   if (isUnexpected(response)) {
     throw new Error(response.body.error.message);
   }
-  return response.body.choices[0].message.content;
+  if (!response.body.choices[0].message.content) {
+    throw new Error("No Content from AI");
+  }
+  const parseResult = getChartDescRespSchema.safeParse(
+    JSON.parse(response.body.choices[0].message.content)
+  );
+  if (!parseResult.success) {
+    throw new Error(parseResult.error.message);
+  }
+  return parseResult.data;
 }
-
-// "https://imgupload-urf0.onrender.com/uploads/3a1e670e90a04260832bfcb881fb65a1.png"

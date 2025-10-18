@@ -1,11 +1,17 @@
 from flask import Flask,request,jsonify,send_from_directory
 from werkzeug.utils import secure_filename
-import uuid
-import os
+import uuid,os
+from pydantic import BaseModel
+from aiTools import getAiResp
+
 app = Flask(__name__)
 
 os.makedirs("uploads",exist_ok=True)
 ALLOWED_EXTENSIONS = {'.png', '.jpg', '.jpeg'}
+
+class ChartInsightReqSchema(BaseModel):
+    imgurl:str
+    model:str
 
 @app.route("/version")
 def version():
@@ -22,16 +28,24 @@ def upload_image():
     file.save(savepath)
     return jsonify({"filename":savepath}),200
 
+@app.route('/uploads/<filename>')
+def serve_image(filename):
+    return send_from_directory("uploads", filename)
+
+@app.route('/generate-chart-insight',methods=["POST"])
+def generate_chart_insight():
+    req = ChartInsightReqSchema(**request.get_json())
+    resp = getAiResp(model=req.model,imgurl=req.imgurl)
+    return jsonify({"insight":resp.insight})
+
 @app.route("/clearmemory")
 def clear_memory():
     list= os.listdir('uploads')
     for i in list:
         os.remove(f"uploads/{i}")
+    # print(resp)
     return jsonify({"status":"success"}),200
 
-@app.route('/uploads/<filename>')
-def serve_image(filename):
-    return send_from_directory("uploads", filename)
 
 
     

@@ -15,7 +15,7 @@ class ChartInsightReqSchema(BaseModel):
 
 @app.route("/version")
 def version():
-    return "0.0.1"
+    return "0.0.2"
 
 @app.route("/upload",methods=["POST"])
 def upload_image():

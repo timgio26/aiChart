@@ -1,3 +1,4 @@
+# this app need env var GITHUB_TOKEN on runtime
 # Use a minimal base image
 FROM python:3.11-alpine
 

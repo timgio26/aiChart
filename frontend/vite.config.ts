@@ -9,7 +9,7 @@ export default defineConfig({
     proxy:{
       '/api': {
         // target: 'http://localhost:5000',
-        target: 'https://imgupload-urf0.onrender.com',
+        target: 'https://imgupload-be.onrender.com',
         changeOrigin: true,
         rewrite: path => path.replace(/^\/api/, '')
       }

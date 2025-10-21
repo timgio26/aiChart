@@ -1,15 +1,16 @@
 import toast from "react-hot-toast";
-import { getChartDesc } from "./Ai";
-import { useUploadImage } from "./MyQuery";
-import { useEffect, useState } from "react";
+// import { getChartDesc } from "./Ai";
+import { useGetImgInsight, useUploadImage } from "./MyQuery";
+import { useState } from "react";
 
 export function ChartAI() {
   const [preview, setPreview] = useState<boolean>(false);
   const [model, setModel] = useState<string>();
   const [method, setMethod] = useState<string>();
+  // const [aiResp,setAiResp] = useState<string>()
+  // const [isLoading,setIsLoading] = useState<boolean>(false)
   const { uploadImg, data, isPending } = useUploadImage();
-  const [aiResp,setAiResp] = useState<string>()
-  const [isLoading,setIsLoading] = useState<boolean>(false)
+  const {generateInsight,data:Insight,isPending:isGenerating} = useGetImgInsight()
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -23,30 +24,19 @@ export function ChartAI() {
 
   async function handleGetAnswer(){
     try {
-      setIsLoading(true)
-      const resp = await getChartDesc(`${import.meta.env.VITE_API_BASE_URL}/${data}`)
-      if(resp){setAiResp(resp.insight)}
-      
+      // setIsLoading(true)
+      if(!model || !data){throw new Error("no model selected");}
+      generateInsight({imgurl:`${import.meta.env.VITE_API_BASE_URL}/${data}`,model})
+      // console.log(Insight)
     } catch (error) {
       if(error instanceof Error){
         toast.error(error.message.trim())
       }else{
         toast.error("something wrong")
       }
-    } finally{
-      setIsLoading(false)
-    }
+    } 
   }
-
-  useEffect(() => {
-    console.log("img change");
-  }, [data]);
-
-  // const htmlContent = <>
-  // <b>highlight</b>
-  // <i>italict</i>
-  // </>
-
+  console.log(Insight)
   return (
     <div className="flex flex-col items-center gap-4 md:p-6 max-w-md mx-auto">
       <h2 className="text-xl font-semibold text-gray-800">
@@ -122,9 +112,9 @@ export function ChartAI() {
               <option value="" disabled hidden>
                 Select a model...
               </option>
-              <option value="Model A">Model A</option>
-              <option value="Model B">Model B</option>
-              <option value="Model C">Model C</option>
+              <option value="openai/gpt-4.1-mini">gpt-4.1-mini</option>
+              <option value="openai/gpt-4.1-nano">gpt-4.1-nano</option>
+              {/* <option value="openai/o4-mini">o4-mini</option> */}
             </select>
           </div>
           <div>
@@ -156,12 +146,12 @@ export function ChartAI() {
           className="inline-flex items-center justify-center px-6 py-2 bg-indigo-600 text-white font-semibold rounded-md shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition"
           onClick={handleGetAnswer}
         >
-          {!isLoading?"Generate Answer":"Thinking..."}
+          {!isGenerating?"Generate Answer":"Thinking..."}
         </button>
       )}
 
       <div>
-        <span>{aiResp}</span>
+        <span>{Insight?.insight}</span>
       </div>
       {/* {htmlContent} */}
     </div>

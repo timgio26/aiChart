@@ -7,8 +7,6 @@ export function ChartAI() {
   const [preview, setPreview] = useState<boolean>(false);
   const [model, setModel] = useState<string>();
   const [method, setMethod] = useState<string>();
-  // const [aiResp,setAiResp] = useState<string>()
-  // const [isLoading,setIsLoading] = useState<boolean>(false)
   const { uploadImg, data, isPending } = useUploadImage();
   const {generateInsight,data:Insight,isPending:isGenerating} = useGetImgInsight()
 
@@ -36,7 +34,7 @@ export function ChartAI() {
       }
     } 
   }
-  console.log(Insight)
+  // console.log(Insight)
   return (
     <div className="flex flex-col items-center gap-4 md:p-6 max-w-md mx-auto">
       <h2 className="text-xl font-semibold text-gray-800">

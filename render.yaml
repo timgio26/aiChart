@@ -1,0 +1,22 @@
+# Exported from Render on 2025-10-22T10:44:34Z
+version: "1"
+services:
+- type: web
+  name: aichart-be
+  runtime: image
+  image:
+    url: docker.io/timotiusgiovandi/imgupload-be:latest
+  plan: free
+  envVars:
+  - key: GITHUB_TOKEN
+    sync: false
+  region: frankfurt
+  autoDeployTrigger: commit
+- type: web
+  name: aichart-fe
+  runtime: image
+  image:
+    url: docker.io/timotiusgiovandi/aichart-fe:latest
+  plan: free
+  region: frankfurt
+  autoDeployTrigger: commit

@@ -6,10 +6,11 @@ import z from "zod";
 interface UseGetImgInsight {
     imgurl:string
     model:string
+    prompt:string
 }
 
 const UseGetImgInsightRespSchema = z.object({
-    insight:z.string()
+    answer:z.string()
 })
 
 const ImgUploadRespSchema = z.object({
@@ -39,10 +40,11 @@ export function useUploadImage() {
 
 export function useGetImgInsight() {
   const { mutate:generateInsight,data, isPending } = useMutation({
-    mutationFn: async ({imgurl,model}:UseGetImgInsight) => {
+    mutationFn: async ({imgurl,model,prompt}:UseGetImgInsight) => {
       const resp = await axios.post("api/generate-chart-insight", {
         imgurl,
         model,
+        prompt
       });
       const parseResult = UseGetImgInsightRespSchema.safeParse(resp.data)
       if(!parseResult.success){

@@ -23,8 +23,8 @@ export function ChartAI() {
   async function handleGetAnswer(){
     try {
       // setIsLoading(true)
-      if(!model || !data){throw new Error("no model selected");}
-      generateInsight({imgurl:`${import.meta.env.VITE_API_BASE_URL}/${data}`,model})
+      if(!model || !data ||!method){throw new Error("no model / method selected");}
+      generateInsight({imgurl:`${import.meta.env.VITE_API_BASE_URL}/${data}`,model,prompt:method})
       // console.log(Insight)
     } catch (error) {
       if(error instanceof Error){
@@ -132,8 +132,8 @@ export function ChartAI() {
               <option value="" disabled hidden>
                 Select a method...
               </option>
-              <option value="Promt A">Prompt A</option>
-              <option value="Promt B">Prompt B</option>
+              <option value={0}>Chart of Thought</option>
+              <option value={1}>General User‑Style</option>
             </select>
           </div>
         </div>
@@ -149,7 +149,7 @@ export function ChartAI() {
       )}
 
       <div>
-        <span>{Insight?.insight}</span>
+        <span>{Insight?.answer}</span>
       </div>
       {/* {htmlContent} */}
     </div>

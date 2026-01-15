@@ -12,6 +12,7 @@ ALLOWED_EXTENSIONS = {'.png', '.jpg', '.jpeg'}
 class ChartInsightReqSchema(BaseModel):
     imgurl:str
     model:str
+    prompt:str
 
 @app.route("/version")
 def version():
@@ -35,7 +36,7 @@ def serve_image(filename):
 @app.route('/generate-chart-insight',methods=["POST"])
 def generate_chart_insight():
     req = ChartInsightReqSchema(**request.get_json())
-    resp = getAiResp(model=req.model,imgurl=req.imgurl)
+    resp = getAiResp(model=req.model,imgurl=req.imgurl,prompt=req.prompt)
     return jsonify({"insight":resp.insight})
 
 @app.route("/clearmemory")
